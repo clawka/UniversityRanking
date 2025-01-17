@@ -1,7 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using UniversityRanking.Models.University;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<UniversityContext>(options =>
+{
+    options.UseSqlite(builder.Configuration["UniversityDatabase:ConnectionString"]);
+});
 
 var app = builder.Build();
 
