@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using UniversityRanking.Models;
 using UniversityRanking.Models.University;
 
+
 namespace UniversityRanking.Controllers
 {
     public class UniversityController : Controller
@@ -33,7 +34,78 @@ namespace UniversityRanking.Controllers
                 page,
                 size));
         }
+        
+        public async Task<IActionResult> ScoresByYear(int universityId, int rankingSystemId, string rankingSystemName , string NameUniversity)
+        {
+            var scores = await _context.UniversityRankingYears
+                .Include(ur => ur.University)
+                .Include(ur => ur.RankingCriteria)  
+                .ThenInclude(rc => rc.RankingSystem)
+                .Where(ur => ur.University.Id == universityId && ur.RankingCriteria.RankingSystemId == rankingSystemId)
+                .OrderBy(ur => ur.Year)
+                .ToListAsync();
+            ViewBag.NameUniversity = NameUniversity;
+            ViewBag.NameRankingSystem =  rankingSystemName;
+            return View(scores);
+        }
+        
+        [HttpGet]
+        public IActionResult CreateRanking(int universityId)
+        {
+            var university = _context.Universities.FirstOrDefault(u => u.Id == universityId);
+            if (university == null)
+            {
+                return NotFound();
+            }
 
+            ViewData["UniversityName"] = university.UniversityName; // Название университета
+            ViewData["RankingSystems"] = new SelectList(_context.RankingSystems, "Id", "SystemName"); // Список систем
+            return View(new UniversityRankingYear { UniversityId = universityId });
+        }
+
+        [HttpGet]
+        public JsonResult GetRankingCriteria(int rankingSystemId)
+        {
+            var criteria = _context.RankingCriteria
+                .Where(rc => rc.RankingSystemId == rankingSystemId)
+                .Select(rc => new { rc.Id, rc.CriteriaName })
+                .ToList();
+
+            return Json(criteria);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateRanking(UniversityRankingYear ranking)
+        {
+            if (ranking.Year <= 2016)
+            {
+                ModelState.AddModelError("Year", "Year must be above 2016.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var university = _context.Universities.FirstOrDefault(u => u.Id == ranking.UniversityId);
+                if (university == null)
+                {
+                    return NotFound();
+                }
+
+                ViewData["UniversityName"] = university.UniversityName; // Название университета
+                ViewData["RankingSystems"] = new SelectList(_context.RankingSystems, "Id", "SystemName"); // Список систем
+                ViewData["RankingCriteria"] = new SelectList(_context.RankingCriteria, "Id", "CriteriaName", ranking.RankingCriteriaId); // Список критериев
+
+                return View(ranking); // Возвращаем форму с ошибками
+            }
+            
+            _context.UniversityRankingYears.Add(ranking);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+    
+
+        
         // GET: Univerrsity/Details/5
         public async Task<IActionResult> Details(int? id)
         {

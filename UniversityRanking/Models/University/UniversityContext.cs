@@ -89,8 +89,9 @@ public partial class UniversityContext : DbContext
 
         modelBuilder.Entity<UniversityRankingYear>(entity =>
         {
+            entity.HasKey(e => new { e.UniversityId, e.RankingCriteriaId, e.Year });
+
             entity
-                .HasNoKey()
                 .ToTable("university_ranking_year");
 
             entity.Property(e => e.RankingCriteriaId)

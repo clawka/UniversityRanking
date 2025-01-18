@@ -1,0 +1,75 @@
+@model UniversityRanking.Models.University.UniversityRankingYear
+
+@{
+    ViewData["Title"] = "Create New Record";
+}
+
+<h1>Create New Ranking</h1>
+
+<h3 class="form-group">
+    <label>University:</label>
+    <p class="form-control-static">@ViewData["UniversityName"]</p>
+</h3>
+
+<form asp-action="CreateRanking" method="post">
+    <input type="hidden" asp-for="UniversityId" value="@Model.UniversityId" />
+
+    <div class="form-group">
+    <label asp-for="Year" class="control-label"></label>
+    <input asp-for="Year" class="form-control" type="number" />
+    <span asp-validation-for="Year" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="RankingCriteriaId" class="control-label">Ranking System</label>
+        <select id="rankingSystem" class="form-control">
+            <option value="">-- Select Ranking System --</option>
+            @foreach (var system in ViewBag.RankingSystems as SelectList)
+            {
+                <option value="@system.Value">@system.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="RankingCriteriaId" class="control-label">Criteria</label>
+        <select asp-for="RankingCriteriaId" class="form-control" id="criteriaList">
+            <option value="">-- Select Criteria --</option>
+        </select>
+        <span asp-validation-for="RankingCriteriaId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Score" class="control-label"></label>
+        <input asp-for="Score" class="form-control" />
+        <span asp-validation-for="Score" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#rankingSystem').change(function () {
+                var systemId = $(this).val();
+
+                // Очистка старых данных
+                $('#criteriaList').empty();
+                $('#criteriaList').append('<option value="">-- Select Criteria --</option>');
+
+                if (systemId) {
+                    // Получение критериев через AJAX
+                    $.getJSON('/University/GetRankingCriteria', { rankingSystemId: systemId }, function (data) {
+                        $.each(data, function (i, criteria) {
+                            $('#criteriaList').append('<option value="' + criteria.id + '">' + criteria.criteriaName + '</option>');
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+    
+}

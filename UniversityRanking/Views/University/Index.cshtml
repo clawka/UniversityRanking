@@ -8,10 +8,6 @@
 }
 
 <h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -34,9 +30,21 @@
                 @Html.DisplayFor(modelItem => item.Country.CountryName)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="ScoresByYear" asp-route-universityId="@item.Id" asp-route-rankingSystemId="1" 
+                   asp-route-rankingSystemName="Times Higher Education World University Ranking" asp-route-NameUniversity="@item.UniversityName"
+                   >Times Higher Education World University Ranking</a> |
+                <a asp-action="ScoresByYear" asp-route-universityId="@item.Id" asp-route-rankingSystemId="2" 
+                   asp-route-rankingSystemName="Shanghai Ranking" asp-route-NameUniversity="@item.UniversityName"
+                   >Shanghai Ranking</a> |
+                <a asp-action="ScoresByYear" asp-route-universityId="@item.Id" asp-route-rankingSystemId="3"
+                   asp-route-rankingSystemName="Center for World University Rankings" asp-route-NameUniversity="@item.UniversityName"
+                >Center for World University Rankings</a>
+                <td>
+                    
+                    <a asp-action="CreateRanking" asp-route-universityId="@item.Id" class="btn btn-outline-success btn-sm">
+                        Add Ranking
+                    </a>
+                </td>
             </td>
         </tr>
 }

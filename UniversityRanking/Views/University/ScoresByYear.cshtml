@@ -1,0 +1,32 @@
+@model IEnumerable<UniversityRanking.Models.University.UniversityRankingYear>
+
+<h1>Scores for @ViewBag.NameUniversity</h1>
+<h3><strong>Ranking System:</strong> @ViewBag.NameRankingSystem</h3>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Year</th>
+        <th>Criterion</th>
+        <th>Score</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Year</td>
+            <td>@item.RankingCriteria.CriteriaName</td>
+            <td>@item.Score</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+
+<a asp-action="Index">Back to List</a>
+
