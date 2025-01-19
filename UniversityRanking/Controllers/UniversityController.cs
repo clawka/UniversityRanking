@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using UniversityRanking.Models.University;
 
 namespace UniversityRanking.Controllers
 {
+    [Authorize]
     public class UniversityController : Controller
     {
         private readonly UniversityContext _context;
